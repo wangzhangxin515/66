@@ -25,7 +25,7 @@ def get_full_error(chunk, stream_response):
             break
     return chunk
 
-def predict_no_ui(inputs, top_p, temperature, history=[]):
+def predict_no_ui(api, inputs, top_p, temperature, history=[]):
     """
         发送至chatGPT，等待回复，一次性完成，不显示中间过程。
         predict函数的简化版。
@@ -36,7 +36,7 @@ def predict_no_ui(inputs, top_p, temperature, history=[]):
         history 是之前的对话列表
         （注意无论是inputs还是history，内容太长了都会触发token数量溢出的错误，然后raise ConnectionAbortedError）
     """
-    headers, payload = generate_payload(inputs, top_p, temperature, history, system_prompt="", stream=False)
+    headers, payload = generate_payload(api, inputs, top_p, temperature, history, system_prompt="", stream=False)
 
     retry = 0
     while True:
@@ -58,7 +58,7 @@ def predict_no_ui(inputs, top_p, temperature, history=[]):
         raise ConnectionAbortedError("Json解析不合常规，可能是文本过长" + response.text)
 
 
-def predict(inputs, top_p, temperature, chatbot=[], history=[], system_prompt='', 
+def predict(api, inputs, top_p, temperature, chatbot=[], history=[], system_prompt='', 
             stream = True, additional_fn=None):
     """
         发送至chatGPT，流式获取输出。
@@ -81,7 +81,7 @@ def predict(inputs, top_p, temperature, chatbot=[], history=[], system_prompt=''
         chatbot.append((inputs, ""))
         yield chatbot, history, "等待响应"
 
-    headers, payload = generate_payload(inputs, top_p, temperature, history, system_prompt, stream)
+    headers, payload = generate_payload(api, inputs, top_p, temperature, history, system_prompt, stream)
     history.append(inputs); history.append(" ")
 
     retry = 0
@@ -135,7 +135,7 @@ def predict(inputs, top_p, temperature, chatbot=[], history=[], system_prompt=''
                     yield chatbot, history, "Json解析不合常规，很可能是文本过长" + error_msg
                     return
 
-def generate_payload(inputs, top_p, temperature, history, system_prompt, stream):
+def generate_payload(api, inputs, top_p, temperature, history, system_prompt, stream):
     """
         整合所有信息，选择LLM模型，生成http请求，为发送请求做准备
     """

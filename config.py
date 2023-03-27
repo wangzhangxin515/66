@@ -24,6 +24,3 @@ MAX_RETRY = 2
 # 选择的OpenAI模型是（gpt4现在只对申请成功的人开放）
 LLM_MODEL = "gpt-3.5-turbo"
 
-# 检查一下是不是忘了改config
-if API_KEY == "sk-此处填API秘钥":
-    assert False, "请在config文件中修改API密钥, 添加海外代理之后再运行"

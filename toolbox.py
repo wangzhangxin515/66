@@ -2,7 +2,7 @@ import markdown, mdtex2html, threading
 from show_math import convert as convert_math
 from functools import wraps
 
-def predict_no_ui_but_counting_down(i_say, i_say_show_user, chatbot, top_p, temperature, history=[]):
+def predict_no_ui_but_counting_down(api, i_say, i_say_show_user, chatbot, top_p, temperature, history=[]):
     """
         调用简单的predict_no_ui接口，但是依然保留了些许界面心跳功能，当对话太长时，会自动采用二分法截断
     """
@@ -17,7 +17,7 @@ def predict_no_ui_but_counting_down(i_say, i_say_show_user, chatbot, top_p, temp
     def mt(i_say, history): 
         while True:
             try:
-                mutable[0] = predict_no_ui(inputs=i_say, top_p=top_p, temperature=temperature, history=history)
+                mutable[0] = predict_no_ui(api, inputs=i_say, top_p=top_p, temperature=temperature, history=history)
                 break
             except ConnectionAbortedError as e:
                 if len(history) > 0:
@@ -73,9 +73,9 @@ def CatchException(f):
         装饰器函数，捕捉函数f中的异常并封装到一个生成器中返回，并显示到聊天当中。
     """
     @wraps(f)
-    def decorated(txt, top_p, temperature, chatbot, history, systemPromptTxt, WEB_PORT):
+    def decorated(api, txt, top_p, temperature, chatbot, history, systemPromptTxt, WEB_PORT):
         try:
-            yield from f(txt, top_p, temperature, chatbot, history, systemPromptTxt, WEB_PORT)
+            yield from f(api, txt, top_p, temperature, chatbot, history, systemPromptTxt, WEB_PORT)
         except Exception as e:
             import traceback
             from check_proxy import check_proxy

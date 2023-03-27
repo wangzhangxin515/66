@@ -51,6 +51,9 @@ with gr.Blocks(theme=set_theme, analytics_enabled=False) as demo:
         with gr.Column(scale=1):
             with gr.Row():
                 with gr.Column(scale=12):
+                    api = gr.Textbox(show_label=False, placeholder="Input OpenAI Key.").style(container=False)
+            with gr.Row():
+                with gr.Column(scale=12):
                     txt = gr.Textbox(show_label=False, placeholder="Input question here.").style(container=False)
                 with gr.Column(scale=1):
                     submitBtn = gr.Button("Ask", variant="primary")
@@ -77,15 +80,15 @@ with gr.Blocks(theme=set_theme, analytics_enabled=False) as demo:
                 top_p = gr.Slider(minimum=-0, maximum=1.0, value=1.0, step=0.01,interactive=True, label="Top-p (nucleus sampling)",)
                 temperature = gr.Slider(minimum=-0, maximum=5.0, value=1.0, step=0.01, interactive=True, label="Temperature",)
 
-    txt.submit(predict, [txt, top_p, temperature, chatbot, history, systemPromptTxt], [chatbot, history, statusDisplay])
-    submitBtn.click(predict, [txt, top_p, temperature, chatbot, history, systemPromptTxt], [chatbot, history, statusDisplay], show_progress=True)
+    txt.submit(predict, [api, txt, top_p, temperature, chatbot, history, systemPromptTxt], [chatbot, history, statusDisplay])
+    submitBtn.click(predict, [api, txt, top_p, temperature, chatbot, history, systemPromptTxt], [chatbot, history, statusDisplay], show_progress=True)
     for k in functional:
         functional[k]["Button"].click(predict, 
-            [txt, top_p, temperature, chatbot, history, systemPromptTxt, TRUE, gr.State(k)], [chatbot, history, statusDisplay], show_progress=True)
+            [api, txt, top_p, temperature, chatbot, history, systemPromptTxt, TRUE, gr.State(k)], [chatbot, history, statusDisplay], show_progress=True)
     file_upload.upload(on_file_uploaded, [file_upload, chatbot, txt], [chatbot, txt])
     for k in crazy_functional:
         click_handle = crazy_functional[k]["Button"].click(crazy_functional[k]["Function"], 
-            [txt, top_p, temperature, chatbot, history, systemPromptTxt, gr.State(PORT)], [chatbot, history, statusDisplay]
+            [api, txt, top_p, temperature, chatbot, history, systemPromptTxt, gr.State(PORT)], [chatbot, history, statusDisplay]
         )
         try: click_handle.then(on_report_generated, [file_upload, chatbot], [file_upload, chatbot])
         except: pass

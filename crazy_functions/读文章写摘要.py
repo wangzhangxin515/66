@@ -20,7 +20,7 @@ def 解析Paper(file_manifest, project_folder, top_p, temperature, chatbot, hist
         if not fast_debug: 
             msg = '正常'
             # ** gpt request **
-            gpt_say = yield from predict_no_ui_but_counting_down(i_say, i_say_show_user, chatbot, top_p, temperature, history=[])   # 带超时倒计时
+            gpt_say = yield from predict_no_ui_but_counting_down(api, i_say, i_say_show_user, chatbot, top_p, temperature, history=[])   # 带超时倒计时
 
             print('[2] end gpt req')
             chatbot[-1] = (i_say_show_user, gpt_say)
@@ -38,7 +38,7 @@ def 解析Paper(file_manifest, project_folder, top_p, temperature, chatbot, hist
     if not fast_debug: 
         msg = '正常'
         # ** gpt request **
-        gpt_say = yield from predict_no_ui_but_counting_down(i_say, i_say, chatbot, top_p, temperature, history=history)   # 带超时倒计时
+        gpt_say = yield from predict_no_ui_but_counting_down(api, i_say, i_say, chatbot, top_p, temperature, history=history)   # 带超时倒计时
 
         chatbot[-1] = (i_say, gpt_say)
         history.append(i_say); history.append(gpt_say)
@@ -50,7 +50,7 @@ def 解析Paper(file_manifest, project_folder, top_p, temperature, chatbot, hist
 
 
 @CatchException
-def 读文章写摘要(txt, top_p, temperature, chatbot, history, systemPromptTxt, WEB_PORT):
+def 读文章写摘要(api, txt, top_p, temperature, chatbot, history, systemPromptTxt, WEB_PORT):
     history = []    # 清空历史，以免输入溢出
     import glob, os
     if os.path.exists(txt):
